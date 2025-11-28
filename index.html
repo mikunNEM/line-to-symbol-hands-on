@@ -10,7 +10,7 @@
   <style>
     * {
       margin: 0;
-      padding: 0;
+      padding: 10;
       box-sizing: border-box;
     }
 
@@ -36,11 +36,11 @@
 
     .container {
       background: white;
-      padding: 15px 20px;
+      padding: 20px 20px;
       margin: 0 auto;
       /* ← 中央寄せ */
       width: 100%;
-      max-width: 900px;
+      max-width: 1000px;
       /* ← 横幅を制限して読みやすく */
       min-height: 100vh;
       box-sizing: border-box;
@@ -70,7 +70,7 @@
 
     .toc {
       background: #f8f9ff;
-      padding: 20px;
+      padding: 50px;
       border-radius: 8px;
       margin: 20px 0;
       border-left: 4px solid #667eea;
@@ -229,14 +229,14 @@
         <li><a href="#intro">🎯 はじめに</a></li>
         <li><a href="#preparation">📦 準備するもの</a></li>
         <li><a href="#terms">📚 用語解説</a></li>
-        <li><a href="#step1">🐙 ステップ1: GitHubアカウント作成とリポジトリフォーク</a></li>
-        <li><a href="#step2">💬 ステップ2: LINE Developersでボット作成</a></li>
-        <li><a href="#step3">💰 ステップ3: Symbolウォレット作成</a></li>
-        <li><a href="#step4">🚀 ステップ4: Renderでデプロイ</a></li>
-        <li><a href="#step5">⚙️ ステップ5: 環境変数設定</a></li>
-        <li><a href="#step6">🔗 ステップ6: Webhook設定</a></li>
-        <li><a href="#step7">✅ ステップ7: 動作テスト</a></li>
-        <li><a href="#step8">👀 ステップ8: ビューワー</a>で確認</li>
+        <li><a href="#step1">🐙 ステップ1:　GitHubアカウント作成とリポジトリフォーク</a></li>
+        <li><a href="#step2">💬 ステップ2:　LINE Developersでボット作成</a></li>
+        <li><a href="#step3">💰 ステップ3:　Symbolウォレット作成</a></li>
+        <li><a href="#step4">🚀 ステップ4:　Renderでデプロイ</a></li>
+        <li><a href="#step5">⚙️ ステップ5:　環境変数設定</a></li>
+        <li><a href="#step6">🔗 ステップ6:　Webhook設定</a></li>
+        <li><a href="#step7">✅ ステップ7:　動作テスト</a></li>
+        <li><a href="#step8">👀 ステップ8:　ビューワー</a>で確認</li>
         <li><a href="#troubleshoot">🔧 トラブルシューティング</a></li>
         <li><a href="#customize">🎨 カスタマイズ方法</a></li>
       </ul>
@@ -259,12 +259,12 @@
 
     <div id="preparation">
       <h2>📦 準備するもの</h2>
-      <p>以下のアカウントを作成する必要があります（すべて無料）:</p>
+      <p>以下のアカウントを作成する必要があります（無料で利用出来ます）:</p>
       <ul>
-        <li>✅ GitHubアカウント（コード保存用）</li>
-        <li>✅ LINE Developersアカウント（ボット作成用）</li>
-        <li>✅ Symbolウォレット（ブロックチェーン用）</li>
-        <li>✅ Renderアカウント（アプリ公開用）</li>
+        <li>　✅ GitHubアカウント（コード保存用）</li>
+        <li>　✅ LINE Developersアカウント（ボット作成用）</li>
+        <li>　✅ Symbolウォレット（ブロックチェーン用）</li>
+        <li>　✅ Renderアカウント（アプリ公開用）</li>
       </ul>
     </div>
 
@@ -636,13 +636,13 @@
 
       <div class="goal">
         <h4>🎯 目標</h4>
-        <p>GitHubのコードをRenderで24時間稼働するWebサービスとして公開します。(無料プランでは15分アクセスが無いとスリープモードになります)</p>
+        <p>GitHubのコードをRenderで24時間稼働するWebサービスとして公開します。(無料(Hobby)プランは15分アクセスが無いとスリープモードになります)</p>
       </div>
 
       <h4>📝 手順</h4>
       <ol>
         <li>
-          <strong>Renderアカウント作成</strong>
+          <strong>Renderアカウント作成 (無料プラン)</strong>
           <ul>
             <li><a href="https://render.com/" target="_blank">https://render.com/</a> にアクセス</li>
             <li>「Get Started」をクリック</li>
@@ -750,28 +750,25 @@
 
         <li>
           <strong>以下の環境変数を追加</strong>
-          <div class="code-block"><span
-              style="background-color: rgb(255, 255, 255); font-family: &quot;Noto Sans JP&quot;, Arial, sans-serif; font-size: 0px;"><span
-                style="font-weight: bolder; font-family: &quot;Courier New&quot;, monospace; font-size: 18px;">NODE_URL</span><span
-                style="font-family: &quot;Courier New&quot;, monospace; font-size: 18px; background-color: rgb(245, 245, 245);">:
-                https://testnet1.symbol-mikun.net:3001<br><br><span
-                  style="font-family: &quot;Noto Sans JP&quot;, Arial, sans-serif;"><span
-                    style="font-weight: bolder; font-family: &quot;Courier New&quot;, monospace;">LINE_CHANNEL_SECRET</span><span
-                    style="font-family: &quot;Courier New&quot;, monospace;">: （ステップ2で取得したChannel
-                    Secret）<br><br></span></span><span
-                  style="font-family: &quot;Noto Sans JP&quot;, Arial, sans-serif;"><span
-                    style="font-weight: bolder; font-family: &quot;Courier New&quot;, monospace;">LINE_ACCESS_TOKEN</span><span
-                    style="font-family: &quot;Courier New&quot;, monospace;">: （ステップ2で取得したChannel Access
-                    Token）<br><br></span></span><span
-                  style="font-family: &quot;Noto Sans JP&quot;, Arial, sans-serif;"><span
-                    style="font-weight: bolder; font-family: &quot;Courier New&quot;, monospace;">SYMBOL_PRIVATE_KEY</span><span
-                    style="font-family: &quot;Courier New&quot;, monospace;">: （ステップ3で取得した秘密鍵）<br><span
-                      style="font-family: &quot;Noto Sans JP&quot;, Arial, sans-serif;"><span
-                        style="font-family: &quot;Courier New&quot;, monospace;"><br><span
-                          style="font-weight: bolder;">SYMBOL_TO_ADDRESS</span></span><span
-                        style="font-weight: 400; font-family: &quot;Courier New&quot;, monospace;">:&nbsp;<p>
-                          TANWG4F32RMJT6UEKA2COQPJERCDLHB34RIGBII</p></span></span></span></span></span></span></div>
+          <div class="code-block">
+            <pre
+              style="white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 16px; line-height: 1.6; margin: 0;">
+
+          NODE_URL:<span style="background:rgb(194, 237, 252); padding:3px 6px; border-radius:4px; display:inline-block; font-weight:bold;">https://testnet1.symbol-mikun.net:3001</span>
+
+          LINE_CHANNEL_SECRET: （ステップ2で取得したチャネルシークレット）
+
+          LINE_ACCESS_TOKEN: （ステップ2で取得したチャネルアクセストークン）
+
+          SYMBOL_PRIVATE_KEY: （ステップ3で取得した秘密鍵）
+
+          SYMBOL_TO_ADDRESS:<span style="background:rgb(194, 237, 252); padding:3px 6px; border-radius:4px; display:inline-block; font-weight:bold;">TANWG4F32RMJT6UEKA2COQPJERCDLHB34RIGBII</span>
+
+              </pre>
+          </div>
         </li>
+
+
         <li>
           <strong>各変数の意味</strong>
           <ul>
@@ -1185,7 +1182,7 @@
         <h4>💬 メッセージのトリガーを変更</h4>
         <p>「📝」以外の文字でもメッセージを記録できるようにする</p>
         <div class="code-block">
-          // server.js 151行目付近 const isNote = text.startsWith("📝") || text.startsWith("🎯") || //
+          // server.js 151行目付近 <br>const isNote = text.startsWith("📝") || text.startsWith("🎯") || //
           新しいトリガー追加 text.toLowerCase().startsWith("note:");
         </div>
       </div>
@@ -1193,14 +1190,14 @@
       <div class="term">
         <h4>💰 送信するXYM金額を変更</h4>
         <p>メッセージと一緒に少額のXYMを送信する</p>
-        <div class="code-block">// server.js 94行目付近 new models.Amount(1000000n) // 1 XYMを送信（元は0n）</div>
+        <div class="code-block">// server.js 94行目付近 <br>new models.Amount(1000000n) // 1 XYMを送信（元は0n）</div>
       </div>
 
       <div class="term">
         <h4>🎨 返信メッセージをカスタマイズ</h4>
         <p>成功時の返信メッセージを変更する</p>
         <div class="code-block">
-          // server.js 168行目付近 await replyLine( replyToken, `🎉 あなたのメッセージを永続保存しました！\n${url}` );</div>
+          // server.js 168行目付近 <br>await replyLine( replyToken, `🎉 あなたのメッセージを永続保存しました！\n${url}` );</div>
       </div>
       <div class="important">
       </div>
