@@ -1,394 +1,498 @@
 <!DOCTYPE html>
-<html lang="ja" data-theme="light" style=""><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>【超初心者向け】LINE botでブロックチェーンにメッセージを記録しよう!完全ガイド</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet">
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+<html lang="ja" data-theme="light" style="">
 
-      html {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        overflow-x: hidden;
-      }
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【超初心者向け】LINE botでブロックチェーンにメッセージを記録しよう!完全ガイド</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-      body {
-        width: 100vw;
-        max-width: 100%;
-        margin: 0;
-        padding: 0;
-        font-family: 'Noto Sans JP', Arial, sans-serif;
-        line-height: 1.6;
-        background: white;
-        color: #333;
-        overflow-x: hidden;
-      }
+    html {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
 
+    body {
+      width: 100vw;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans JP', Arial, sans-serif;
+      line-height: 1.6;
+      background: white;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    .container {
+      background: white;
+      padding: 15px 20px;
+      margin: 0 auto;
+      /* ← 中央寄せ */
+      width: 100%;
+      max-width: 900px;
+      /* ← 横幅を制限して読みやすく */
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    @media (min-width: 768px) {
       .container {
-        background: white;
-        padding: 15px 10px;
-        margin: 0;
-        width: 100%;
-        max-width: 100%;
-        min-height: 100vh;
-        box-sizing: border-box;
+        padding: 25px 30px;
+        /* ← 少し余白UP */
       }
+    }
 
-      @media (min-width: 768px) {
-        .container {
-          padding: 20px 15px;
-        }
-      }
+    .header {
+      text-align: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
 
-      .header {
-        text-align: center;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 30px;
-        border-radius: 10px;
-        margin-bottom: 30px;
-      }
+    .header h1 {
+      margin: 0;
+      font-size: 2.2em;
+      font-weight: 700;
+    }
 
-      .header h1 {
-        margin: 0;
-        font-size: 2.2em;
-        font-weight: 700;
-      }
+    .toc {
+      background: #f8f9ff;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border-left: 4px solid #667eea;
+    }
 
-      .toc {
-        background: #f8f9ff;
-        padding: 20px;
-        border-radius: 8px;
-        margin: 20px 0;
-        border-left: 4px solid #667eea;
-      }
+    .toc h2 {
+      color: #667eea;
+      margin-top: 0;
+    }
 
-      .toc h2 {
-        color: #667eea;
-        margin-top: 0;
-      }
+    .toc ul {
+      list-style: none;
+      padding-left: 0;
+    }
 
-      .toc ul {
-        list-style: none;
-        padding-left: 0;
-      }
+    .toc li {
+      margin: 10px 0;
+      padding: 8px 0;
+    }
 
-      .toc li {
-        margin: 10px 0;
-        padding: 8px 0;
-      }
+    .toc a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
 
-      .toc a {
-        text-decoration: none;
-        color: #333;
-        font-weight: 500;
-        transition: color 0.3s;
-      }
+    .toc a:hover {
+      color: #667eea;
+    }
 
-      .toc a:hover {
-        color: #667eea;
-      }
+    .step {
+      background: #fff;
+      padding: 25px;
+      margin: 20px 0;
+      border-radius: 8px;
+      border-left: 5px solid #667eea;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
 
-      .step {
-        background: #fff;
-        padding: 25px;
-        margin: 20px 0;
-        border-radius: 8px;
-        border-left: 5px solid #667eea;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      }
+    .step-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 20px;
+      margin: -25px -25px 20px -25px;
+      border-radius: 8px 8px 0 0;
+    }
 
-      .step-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 15px 20px;
-        margin: -25px -25px 20px -25px;
-        border-radius: 8px 8px 0 0;
-      }
+    .step-header h3 {
+      margin: 0;
+      font-size: 1.3em;
+    }
 
-      .step-header h3 {
-        margin: 0;
-        font-size: 1.3em;
-      }
+    .goal {
+      background: #e8f4fd;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 15px 0;
+      border-left: 4px solid #2196f3;
+    }
 
-      .goal {
-        background: #e8f4fd;
-        padding: 15px;
-        border-radius: 5px;
-        margin: 15px 0;
-        border-left: 4px solid #2196f3;
-      }
+    .important {
+      background: #fff3e0;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 15px 0;
+      border-left: 4px solid #ff9800;
+    }
 
-      .important {
-        background: #fff3e0;
-        padding: 15px;
-        border-radius: 5px;
-        margin: 15px 0;
-        border-left: 4px solid #ff9800;
-      }
+    .code-block {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      font-family: 'Courier New', monospace;
+      margin: 10px 0;
+      overflow-x: auto;
+    }
 
-      .code-block {
-        background: #f5f5f5;
-        padding: 15px;
-        border-radius: 5px;
-        border: 1px solid #ddd;
-        font-family: 'Courier New', monospace;
-        margin: 10px 0;
-        overflow-x: auto;
-      }
+    .checklist {
+      background: #f1f8e9;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 15px 0;
+      border-left: 4px solid #4caf50;
+    }
 
-      .checklist {
-        background: #f1f8e9;
-        padding: 15px;
-        border-radius: 5px;
-        margin: 15px 0;
-        border-left: 4px solid #4caf50;
-      }
+    .checklist ul {
+      margin: 0;
+      padding-left: 20px;
+    }
 
-      .checklist ul {
-        margin: 0;
-        padding-left: 20px;
-      }
+    .term {
+      background: #f3e5f5;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border-left: 4px solid #9c27b0;
+    }
 
-      .term {
-        background: #f3e5f5;
-        padding: 15px;
-        margin: 10px 0;
-        border-radius: 5px;
-        border-left: 4px solid #9c27b0;
-      }
+    .screenshot {
+      background: #e3f2fd;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 5px;
+      border-left: 4px solid #2196f3;
+    }
 
-      .screenshot {
-        background: #e3f2fd;
-        padding: 15px;
-        margin: 15px 0;
-        border-radius: 5px;
-        border-left: 4px solid #2196f3;
-      }
+    ol li {
+      margin: 15px 0;
+      padding: 5px 0;
+    }
 
-      ol li {
-        margin: 15px 0;
-        padding: 5px 0;
-      }
+    h2 {
+      color: #667eea;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
 
-      h2 {
-        color: #667eea;
-        border-bottom: 2px solid #667eea;
-        padding-bottom: 10px;
-      }
+    h3 {
+      color: #555;
+    }
 
-      h3 {
-        color: #555;
-      }
+    .intro {
+      background: #f8f9ff;
+      padding: 25px;
+      border-radius: 8px;
+      margin: 20px 0;
+      text-align: center;
+    }
 
-      .intro {
-        background: #f8f9ff;
-        padding: 25px;
-        border-radius: 8px;
-        margin: 20px 0;
-        text-align: center;
-      }
+    .intro h2 {
+      color: #667eea;
+      border: none;
+      margin-top: 0;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open%20Sans:wght@400&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto%20Sans%20JP:wght@400&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&amp;display=swap" rel="stylesheet">
+</head>
 
-      .intro h2 {
-        color: #667eea;
-        border: none;
-        margin-top: 0;
-      }
-    </style>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Open%20Sans:wght@400&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Noto%20Sans%20JP:wght@400&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&amp;display=swap" rel="stylesheet"></head>
-  <body style="">
-    <div class="container">
-      <div class="header">
-        <h1>🤖<span style="color: rgb(255, 255, 255);">【初心者向け】</span></h1><h1><span style="color: rgb(255, 255, 255);">LINE botでブロックチェーンにメッセージを記録しよう!</span></h1><h1><span style="color: rgb(255, 255, 255);">完全ガイド</span></h1>
+<body style="">
+  <div class="container">
+    <div class="header">
+      <h1>🤖<span style="color: rgb(255, 255, 255);">【初心者向け】</span></h1>
+      <h1><span style="color: rgb(255, 255, 255);">LINE botでブロックチェーンにメッセージを記録しよう!</span></h1>
+      <h1><span style="color: rgb(255, 255, 255);">完全ガイド</span></h1>
+    </div>
+
+    <div class="toc">
+      <h2>📋 目次</h2>
+      <ul>
+        <li><a href="#intro">🎯 はじめに</a></li>
+        <li><a href="#preparation">📦 準備するもの</a></li>
+        <li><a href="#terms">📚 用語解説</a></li>
+        <li><a href="#step1">🐙 ステップ1: GitHubアカウント作成とリポジトリフォーク</a></li>
+        <li><a href="#step2">💬 ステップ2: LINE Developersでボット作成</a></li>
+        <li><a href="#step3">💰 ステップ3: Symbolウォレット作成</a></li>
+        <li><a href="#step4">🚀 ステップ4: Renderでデプロイ</a></li>
+        <li><a href="#step5">⚙️ ステップ5: 環境変数設定</a></li>
+        <li><a href="#step6">🔗 ステップ6: Webhook設定</a></li>
+        <li><a href="#step7">✅ ステップ7: 動作テスト</a></li>
+        <li><a href="#step8">👀 ステップ8: ビューワー</a>で確認</li>
+        <li><a href="#troubleshoot">🔧 トラブルシューティング</a></li>
+        <li><a href="#customize">🎨 カスタマイズ方法</a></li>
+      </ul>
+    </div>
+
+    <div id="intro" class="intro">
+      <h2>🎯 はじめに</h2>
+      <p>
+        このガイドでは、<strong>LINEでメッセージを送るだけで</strong></p>
+      <p><strong>ブロックチェーンに記録が残る</strong>アプリを作ります！
+      </p>
+      <p>
+        例えば「📝 今日は楽しかった！」とLINE
+        botに送ると、</p>
+      <p>そのメッセージがSymbolブロックチェーンに永続的に記録されます。
+      </p>
+      <p><strong>プログラミング経験ゼロでも大丈夫！</strong></p>
+      <p>手順通りに進めれば、必ず完成します。</p>
+    </div>
+
+    <div id="preparation">
+      <h2>📦 準備するもの</h2>
+      <p>以下のアカウントを作成する必要があります（すべて無料）:</p>
+      <ul>
+        <li>✅ GitHubアカウント（コード保存用）</li>
+        <li>✅ LINE Developersアカウント（ボット作成用）</li>
+        <li>✅ Symbolウォレット（ブロックチェーン用）</li>
+        <li>✅ Renderアカウント（アプリ公開用）</li>
+      </ul>
+    </div>
+
+    <div id="terms">
+      <h2>📚 用語解説</h2>
+
+      <div class="term">
+        <h3>🐙 GitHub（ギットハブ）</h3>
+        <p>プログラムのコード（設計図）を保存・共有できるサービス。Google Driveのプログラム版だと思ってください。</p>
       </div>
 
-      <div class="toc">
-        <h2>📋 目次</h2>
-        <ul>
-          <li><a href="#intro">🎯 はじめに</a></li>
-          <li><a href="#preparation">📦 準備するもの</a></li>
-          <li><a href="#terms">📚 用語解説</a></li>
-          <li><a href="#step1">🐙 ステップ1: GitHubアカウント作成とリポジトリフォーク</a></li>
-          <li><a href="#step2">💬 ステップ2: LINE Developersでボット作成</a></li>
-          <li><a href="#step3">💰 ステップ3: Symbolウォレット作成</a></li>
-          <li><a href="#step4">🚀 ステップ4: Renderでデプロイ</a></li>
-          <li><a href="#step5">⚙️ ステップ5: 環境変数設定</a></li>
-          <li><a href="#step6">🔗 ステップ6: Webhook設定</a></li>
-          <li><a href="#step7">✅ ステップ7: 動作テスト</a></li>
-          <li><a href="#step8">👀 ステップ8: ビューワー</a>で確認</li>
-          <li><a href="#troubleshoot">🔧 トラブルシューティング</a></li>
-          <li><a href="#customize">🎨 カスタマイズ方法</a></li>
-        </ul>
-      </div>
-
-      <div id="intro" class="intro">
-        <h2>🎯 はじめに</h2>
+      <div class="term">
+        <h3>🤖 LINE bot（ラインボット）</h3>
         <p>
-          このガイドでは、<strong>LINEでメッセージを送るだけで</strong></p><p><strong>ブロックチェーンに記録が残る</strong>アプリを作ります！
+          LINEで自動返信してくれるプログラム。普通の友達のようにトークできますが、実際はコンピューターが返事をしています。
         </p>
+      </div>
+
+      <div class="term">
+        <h3>🚀 Render（レンダー）</h3>
         <p>
-          例えば「📝 今日は楽しかった！」とLINE
-          botに送ると、</p><p>そのメッセージがSymbolブロックチェーンに永続的に記録されます。
-        </p>
-        <p><strong>プログラミング経験ゼロでも大丈夫！</strong></p><p>手順通りに進めれば、必ず完成します。</p>
+          作ったプログラムを24時間稼働させてくれるサービス。自分のパソコンを使わずに、インターネット上でアプリを動かせます。無料プランでは15分アクセスが無いとスリープモードになります。</p>
       </div>
 
-      <div id="preparation">
-        <h2>📦 準備するもの</h2>
-        <p>以下のアカウントを作成する必要があります（すべて無料）:</p>
-        <ul>
-          <li>✅ GitHubアカウント（コード保存用）</li>
-          <li>✅ LINE Developersアカウント（ボット作成用）</li>
-          <li>✅ Symbolウォレット（ブロックチェーン用）</li>
-          <li>✅ Renderアカウント（アプリ公開用）</li>
-        </ul>
+      <div class="term">
+        <h3>⛓️ Symbolブロックチェーン</h3>
+        <p>データを改ざんできない形で記録する技術。一度記録されたメッセージは、誰も削除・変更できません。</p>
       </div>
 
-      <div id="terms">
-        <h2>📚 用語解説</h2>
+      <div class="term">
+        <h3>🔗 Webhook（ウェブフック）</h3>
+        <p>LINEでメッセージを送信したときに、自動的にあなたのアプリに通知してくれる仕組み。</p>
+      </div>
+    </div>
 
-        <div class="term">
-          <h3>🐙 GitHub（ギットハブ）</h3>
-          <p>プログラムのコード（設計図）を保存・共有できるサービス。Google Driveのプログラム版だと思ってください。</p>
-        </div>
-
-        <div class="term">
-          <h3>🤖 LINE bot（ラインボット）</h3>
-          <p>
-            LINEで自動返信してくれるプログラム。普通の友達のようにトークできますが、実際はコンピューターが返事をしています。
-          </p>
-        </div>
-
-        <div class="term">
-          <h3>🚀 Render（レンダー）</h3>
-          <p>
-            作ったプログラムを24時間稼働させてくれるサービス。自分のパソコンを使わずに、インターネット上でアプリを動かせます。無料プランでは15分アクセスが無いとスリープモードになります。</p>
-        </div>
-
-        <div class="term">
-          <h3>⛓️ Symbolブロックチェーン</h3>
-          <p>データを改ざんできない形で記録する技術。一度記録されたメッセージは、誰も削除・変更できません。</p>
-        </div>
-
-        <div class="term">
-          <h3>🔗 Webhook（ウェブフック）</h3>
-          <p>LINEでメッセージを送信したときに、自動的にあなたのアプリに通知してくれる仕組み。</p>
-        </div>
+    <div id="step1" class="step">
+      <div class="step-header">
+        <h3>🐙 <span style="color: rgb(255, 255, 255);">ステップ1:&nbsp; &nbsp;GitHubアカウント作成とリポジトリフォーク</span></h3>
       </div>
 
-      <div id="step1" class="step">
-        <div class="step-header">
-          <h3>🐙 <span style="color: rgb(255, 255, 255);">ステップ1:&nbsp; &nbsp;GitHubアカウント作成とリポジトリフォーク</span></h3>
-        </div>
+      <div class="goal">
+        <h4>🎯 目標</h4>
+        <p>GitHubアカウントを作成し、アプリのコードを自分のアカウントにコピーします。</p>
+      </div>
 
-        <div class="goal">
-          <h4>🎯 目標</h4>
-          <p>GitHubアカウントを作成し、アプリのコードを自分のアカウントにコピーします。</p>
-        </div>
-
-        <h4>📝 手順</h4>
-        <ol>
-          <li>
-            <strong>GitHubアカウント作成</strong>
-            <ul>
-              <li><a href="https://github.com" target="_blank">https://github.com</a> にアクセス</li>
-              <li>右上の「Sign up」をクリック</li>
-              <li>ユーザー名、メールアドレス、パスワードを入力</li>
-              <li>メール認証を完了</li>
-            </ul>
-          </li>
-
-          <li>
-            <strong>リポジトリをフォーク（コピー）</strong>
-            <ul>
-              <li>
-                <a href="https://github.com/mikunNEM/line-to-symbol" target="_blank">https://github.com/mikunNEM/line-to-symbol</a>
-                にアクセス
-              </li>
-              <li>右上の「Fork」ボタンをクリック</li>
-              <li>自分のアカウントを選択</li>
-              <li>「Create a new fork」をクリック</li>
-            </ul>
-          </li>
-        </ol>
-
-        <div class="screenshot">
-          <h4>確認すべき箇所</h4>
-          <p>• GitHubのトップページで「Sign up」ボタンが見える</p>
-          <p>• フォーク後、URL が「あなたのユーザー名/line-to-symbol」になっている</p>
-        </div>
-
-        <div class="important">
-          <h4>💡 重要なポイント</h4>
-          <p>
-            フォークが完了すると、コードがあなたのGitHubアカウントにコピーされます。これで自由に変更できるようになります。
-          </p>
-        </div>
-
-        <div class="checklist">
-          <h4>✅ 完了チェック</h4>
+      <h4>📝 手順</h4>
+      <ol>
+        <li>
+          <strong>GitHubアカウント作成</strong>
           <ul>
-            <li>□ GitHubアカウントが作成できた</li>
-            <li>□ line-to-symbolリポジトリをフォークできた</li>
-            <li>□ 自分のアカウントにリポジトリが表示される</li>
+            <li><a href="https://github.com" target="_blank">https://github.com</a> にアクセス</li>
+            <li>右上の「Sign up」をクリック</li>
+            <li>ユーザー名、メールアドレス、パスワードを入力</li>
+            <li>メール認証を完了</li>
           </ul>
-        </div>
+        </li>
+
+        <li>
+          <strong>リポジトリをフォーク（コピー）</strong>
+          <ul>
+            <li>
+              <a href="https://github.com/mikunNEM/line-to-symbol"
+                target="_blank">https://github.com/mikunNEM/line-to-symbol</a>
+              にアクセス
+            </li>
+            <li>右上の「Fork」ボタンをクリック</li>
+            <li>自分のアカウントを選択</li>
+            <li>「Create a new fork」をクリック</li>
+          </ul>
+        </li>
+      </ol>
+
+      <div class="screenshot">
+        <h4>確認すべき箇所</h4>
+        <p>• GitHubのトップページで「Sign up」ボタンが見える</p>
+        <p>• フォーク後、URL が「あなたのユーザー名/line-to-symbol」になっている</p>
       </div>
 
-      <div id="step2" class="step">
-        <div class="step-header">
-          <h3>💬 <span style="color: rgb(255, 255, 255);">ステップ2:&nbsp; &nbsp;LINE公式アカウントとMessaging APIの設定</span></h3>
-        </div>
+      <div class="important">
+        <h4>💡 重要なポイント</h4>
+        <p>
+          フォークが完了すると、コードがあなたのGitHubアカウントにコピーされます。これで自由に変更できるようになります。
+        </p>
+      </div>
 
-        <div class="goal">
-          <h4>🎯 目標</h4>
-          <p>LINE公式アカウントを作成し、Messaging APIを有効化して、必要な認証情報を取得します。</p>
-        </div>
+      <div class="checklist">
+        <h4>✅ 完了チェック</h4>
+        <ul>
+          <li>□ GitHubアカウントが作成できた</li>
+          <li>□ line-to-symbolリポジトリをフォークできた</li>
+          <li>□ 自分のアカウントにリポジトリが表示される</li>
+        </ul>
+      </div>
+    </div>
 
-        <h4>📝 パート1: LINE公式アカウントを作成する</h4>
-        <ol>
-          <li>
-            <strong>LINE Official Account Managerにアクセス</strong>
-            <ul>
-              <li>
-                <a href="https://manager.line.biz/" target="_blank">https://manager.line.biz/</a> にアクセス
-              </li>
-              <li>「LINEアカウントでログイン」をクリック</li>
-              <li>普段使っているLINEアカウントでログイン<p style="line-height: 1.5;"><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/83e976f3-d4a0-4e72-b2c5-a0cd170cb11f" alt="Inserted image" style="max-width: 100%; height: 339.996px; width: 306px;" data-height-listener-added="true"></p></li>
-            </ul>
-          </li>
+    <div id="step2" class="step">
+      <div class="step-header">
+        <h3>💬 <span style="color: rgb(255, 255, 255);">ステップ2:&nbsp; &nbsp;LINE公式アカウントとMessaging APIの設定</span></h3>
+      </div>
 
-          <li>
-            <strong>アカウントを作成</strong>
-            <ul>
-              <li>左上の「作成 📝」ボタンをクリック</li>
-              <li>赤枠の所に情報を入力：今回はアカウント名「テストアカウント」としています。(好きな名称でOK)<div class="code-block"><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/30a55fb3-70d2-47db-bb6d-2a8821b57964" alt="Inserted image" style="font-size: 0px;" data-height-listener-added="true"></p></div>
-              </li>
-              <li>利用規約に同意して「確認」、　「完了」をクリック</li>
-            </ul>
-          </li>
+      <div class="goal">
+        <h4>🎯 目標</h4>
+        <p>LINE公式アカウントを作成し、Messaging APIを有効化して、必要な認証情報を取得します。</p>
+      </div>
 
-          <li>
-            <strong>LINE公式アカウント作成完了</strong>
-            <ul>
-              <li>作成が完了すると、以下のような管理画面が表示されます</li><li><br><p></p><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/de651b0d-e4db-44d3-af39-863518cd8c9e" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p></li><li><p>作成した「テストアカウント」を表示して、</p></li><li><p>右上の「設定」ボタンをクリック</p><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/092a4af8-5fea-41de-8fc8-a5f09fd72488" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><p></p></li><li><p>左のサイドメニューから「Messaging API」をクリック</p></li><li><p>中央の「Messaging APIを利用する」をクリック</p></li><li><p></p><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/532cb2a2-654b-4e68-9918-84f4faa03aed" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br><p></p></li><li><p>プロバイダー名は、適当な名前でOKです。今回は「ハンズオン勉強会」とします。</p></li><li><p></p><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/6d2c32ff-2365-4d16-8a95-1771a4d17d23" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br><p></p></li><li><p>ここも空欄でOK</p></li><li><p></p><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/d451c17d-6ac4-43f2-81e6-dab1a91f6b8e" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br><p></p></li><li><p>OKをクリック</p></li><li><p></p><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/290d7e6f-b2ff-4233-88bf-71b01cc7def5" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br><p></p></li><li><p></p><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/6b79e0ca-cf4c-43cd-a264-d29deeca4df1" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p>LINE Develovers コンソールにログインすると、プロバイダーに「ハンズオン勉強会」があるのでクリックすると、以下のような表示になります。<p></p></li><li><p></p><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/21573653-6907-49d5-aaf2-bab2de263807" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p></li></ul></li></ol><div class="screenshot"><h4><br></h4>
-        </div>
+      <h4>📝 パート1: LINE公式アカウントを作成する</h4>
+      <ol>
+        <li>
+          <strong>LINE Official Account Managerにアクセス</strong>
+          <ul>
+            <li>
+              <a href="https://manager.line.biz/" target="_blank">https://manager.line.biz/</a> にアクセス
+            </li>
+            <li>「LINEアカウントでログイン」をクリック</li>
+            <li>普段使っているLINEアカウントでログイン<p style="line-height: 1.5;"><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/83e976f3-d4a0-4e72-b2c5-a0cd170cb11f"
+                  alt="Inserted image" style="max-width: 100%; height: 339.996px; width: 306px;"
+                  data-height-listener-added="true"></p>
+            </li>
+          </ul>
+        </li>
 
-        <h4>📝 パート2: 認証情報を取得する</h4>
-        <ol start="9">
-          <li><strong>チャネルシークレットを取得</strong>
-            <ul>
-              <li>「チャネル基本設定」タブをクリック</li>
-              <li>コピーボタンをクリック</li>
-              <li><strong><span style="color: rgb(225, 83, 76);">コピー</span></strong><span style="color: rgb(225, 83, 76);">して<meta charset="utf-8"><strong style="
+        <li>
+          <strong>アカウントを作成</strong>
+          <ul>
+            <li>左上の「作成 📝」ボタンをクリック</li>
+            <li>赤枠の所に情報を入力：今回はアカウント名「テストアカウント」としています。(好きな名称でOK)<div class="code-block">
+                <p><img
+                    src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/30a55fb3-70d2-47db-bb6d-2a8821b57964"
+                    alt="Inserted image" style="font-size: 0px;" data-height-listener-added="true"></p>
+              </div>
+            </li>
+            <li>利用規約に同意して「確認」、　「完了」をクリック</li>
+          </ul>
+        </li>
+
+        <li>
+          <strong>LINE公式アカウント作成完了</strong>
+          <ul>
+            <li>作成が完了すると、以下のような管理画面が表示されます</li>
+            <li><br>
+              <p></p>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/de651b0d-e4db-44d3-af39-863518cd8c9e"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p>
+            </li>
+            <li>
+              <p>作成した「テストアカウント」を表示して、</p>
+            </li>
+            <li>
+              <p>右上の「設定」ボタンをクリック</p>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/092a4af8-5fea-41de-8fc8-a5f09fd72488"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p>
+              <p></p>
+            </li>
+            <li>
+              <p>左のサイドメニューから「Messaging API」をクリック</p>
+            </li>
+            <li>
+              <p>中央の「Messaging APIを利用する」をクリック</p>
+            </li>
+            <li>
+              <p></p>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/532cb2a2-654b-4e68-9918-84f4faa03aed"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br>
+              <p></p>
+            </li>
+            <li>
+              <p>プロバイダー名は、適当な名前でOKです。今回は「ハンズオン勉強会」とします。</p>
+            </li>
+            <li>
+              <p></p>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/6d2c32ff-2365-4d16-8a95-1771a4d17d23"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br>
+              <p></p>
+            </li>
+            <li>
+              <p>ここも空欄でOK</p>
+            </li>
+            <li>
+              <p></p>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/d451c17d-6ac4-43f2-81e6-dab1a91f6b8e"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br>
+              <p></p>
+            </li>
+            <li>
+              <p>OKをクリック</p>
+            </li>
+            <li>
+              <p></p>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/290d7e6f-b2ff-4233-88bf-71b01cc7def5"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br>
+              <p></p>
+            </li>
+            <li>
+              <p></p>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/6b79e0ca-cf4c-43cd-a264-d29deeca4df1"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p>LINE
+              Develovers コンソールにログインすると、プロバイダーに「ハンズオン勉強会」があるのでクリックすると、以下のような表示になります。<p></p>
+            </li>
+            <li>
+              <p></p>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/21573653-6907-49d5-aaf2-bab2de263807"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p>
+            </li>
+          </ul>
+        </li>
+      </ol>
+      <div class="screenshot">
+        <h4><br></h4>
+      </div>
+
+      <h4>📝 パート2: 認証情報を取得する</h4>
+      <ol start="9">
+        <li><strong>チャネルシークレットを取得</strong>
+          <ul>
+            <li>「チャネル基本設定」タブをクリック</li>
+            <li>コピーボタンをクリック</li>
+            <li><strong><span style="color: rgb(225, 83, 76);">コピー</span></strong><span
+                style="color: rgb(225, 83, 76);">して
+                <meta charset="utf-8"><strong style="
     box-sizing: border-box;
     background-repeat: no-repeat;
     font-weight: bolder;
@@ -412,17 +516,25 @@
     text-decoration-style: initial;
     text-decoration-color: initial;
   "><span style="box-sizing: border-box; background-repeat: no-repeat; color: rgb(225, 83, 76)">メモ帳に</span></strong>
-保存</span></li><li><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/2d852201-a6e6-482a-aa01-40b5622a1eac" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br></li>
-            </ul>
-          </li>
+                保存
+              </span></li>
+            <li>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/2d852201-a6e6-482a-aa01-40b5622a1eac"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br>
+            </li>
+          </ul>
+        </li>
 
-          <li>
-            <strong>Channel Access Tokenを発行</strong>
-            <ul>
-              <li>「Messaging API設定」タブをクリック</li>
-              <li>1番下にある「チャネルアクセストークン (長期)」</li>
-              <li>「発行」ボタンをクリック</li>
-              <li>発行されたトークンを<strong><span style="color: rgb(225, 83, 76);">コピー</span></strong><span style="color: rgb(225, 83, 76);">して<meta charset="utf-8"><strong style="
+        <li>
+          <strong>Channel Access Tokenを発行</strong>
+          <ul>
+            <li>「Messaging API設定」タブをクリック</li>
+            <li>1番下にある「チャネルアクセストークン (長期)」</li>
+            <li>「発行」ボタンをクリック</li>
+            <li>発行されたトークンを<strong><span style="color: rgb(225, 83, 76);">コピー</span></strong><span
+                style="color: rgb(225, 83, 76);">して
+                <meta charset="utf-8"><strong style="
     box-sizing: border-box;
     background-repeat: no-repeat;
     font-weight: bolder;
@@ -446,392 +558,511 @@
     text-decoration-style: initial;
     text-decoration-color: initial;
   "><span style="box-sizing: border-box; background-repeat: no-repeat; color: rgb(225, 83, 76)">メモ帳に</span></strong>
-保存</span></li><li><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/b52e5184-0d86-41de-89a5-7753c2ee0238" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br></li>
-            </ul>
-          </li>
-        </ol>
+                保存
+              </span></li>
+            <li>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/b52e5184-0d86-41de-89a5-7753c2ee0238"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br>
+            </li>
+          </ul>
+        </li>
+      </ol>
 
-        <div class="important">
-          <h4>💡 重要なポイント</h4>
-          <p><b>チャネルシークレット</b> と <b>チャネルアクセストークン</b>&nbsp;は後で使うので、必ずメモ帳などに保存してください！
-            <strong>絶対に他人に見せないでください。</strong>これらは銀行のパスワードと同じくらい大切です。
-          </p>
-          <p><br></p>
-        </div>
+      <div class="important">
+        <h4>💡 重要なポイント</h4>
+        <p><b>チャネルシークレット</b> と <b>チャネルアクセストークン</b>&nbsp;は後で使うので、必ずメモ帳などに保存してください！
+          <strong>絶対に他人に見せないでください。</strong>これらは銀行のパスワードと同じくらい大切です。
+        </p>
+        <p><br></p>
+      </div>
 
-        <div class="screenshot">
-          <h4><br></h4>
-        </div>
+      <div class="screenshot">
+        <h4><br></h4>
+      </div>
 
-        <div class="checklist">
-          <h4>✅ 完了チェック</h4>
+      <div class="checklist">
+        <h4>✅ 完了チェック</h4>
+        <ul>
+          <li>□ LINE公式アカウントを作成できた</li>
+          <li>□ プロバイダーを作成できた</li>
+          <li>□ Messaging APIチャネルを作成できた</li>
+          <li>□ チャネルシークレット をメモ帳に保存した</li>
+          <li>□ チャネルアクセストークン をメモ帳に保存した</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="step3" class="step">
+      <div class="step-header">
+        <h3>💰 <span style="color: rgb(255, 255, 255);">ステップ3:&nbsp; &nbsp;Symbolウォレット作成</span></h3>
+      </div>
+
+      <div class="goal">
+        <h4>🎯 目標</h4>
+        <p>Symbolブロックチェーン用のウォレットを作成し、テスト用の暗号通貨を取得します。</p>
+      </div>
+
+      <h4>📝 手順</h4>
+      <p>以下のリンクからウォレットを作成してください。</p>
+      <p></p>
+      <p><a href="https://iris-abrosaurus-40d.notion.site/Symbol-2a19fdbf052280e4a2a1e3441ccdeee2"
+          target="_blank">Symbolウォレットの作成の仕方</a></p>
+      <p><br></p>
+      <p></p>
+
+      <div class="important">
+        <h4>💡 重要なポイント</h4>
+        <p>
+          秘密鍵は絶対に他人に見せないでください。この秘密鍵があれば誰でもあなたのウォレットを操作できてしまいます。
+        </p>
+      </div>
+
+      <div class="checklist">
+        <h4>✅ 完了チェック</h4>
+        <ul>
+          <li>□ Symbolウォレットをインストールした</li>
+          <li>□ テストネット用ウォレットを作成した</li>
+          <li>□ アドレスと秘密鍵を取得した</li>
+          <li>□ テスト用XYMを受け取った（残高が表示される）</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="step4" class="step">
+      <div class="step-header">
+        <h3>🚀 <span style="color: rgb(255, 255, 255);">ステップ4:&nbsp; &nbsp;Renderでデプロイ</span></h3>
+      </div>
+
+      <div class="goal">
+        <h4>🎯 目標</h4>
+        <p>GitHubのコードをRenderで24時間稼働するWebサービスとして公開します。(無料プランでは15分アクセスが無いとスリープモードになります)</p>
+      </div>
+
+      <h4>📝 手順</h4>
+      <ol>
+        <li>
+          <strong>Renderアカウント作成</strong>
           <ul>
-            <li>□ LINE公式アカウントを作成できた</li>
-            <li>□ プロバイダーを作成できた</li>
-            <li>□ Messaging APIチャネルを作成できた</li>
-            <li>□ チャネルシークレット をメモ帳に保存した</li>
-            <li>□ チャネルアクセストークン をメモ帳に保存した</li>
+            <li><a href="https://render.com/" target="_blank">https://render.com/</a> にアクセス</li>
+            <li>「Get Started」をクリック</li>
+            <li>「Sign up with GitHub」を選択</li>
+            <li>GitHubアカウントでログイン・連携</li>
           </ul>
-        </div>
-      </div>
+        </li>
 
-      <div id="step3" class="step">
-        <div class="step-header">
-          <h3>💰 <span style="color: rgb(255, 255, 255);">ステップ3:&nbsp; &nbsp;Symbolウォレット作成</span></h3>
-        </div>
-
-        <div class="goal">
-          <h4>🎯 目標</h4>
-          <p>Symbolブロックチェーン用のウォレットを作成し、テスト用の暗号通貨を取得します。</p>
-        </div>
-
-        <h4>📝 手順</h4><p>以下のリンクからウォレットを作成してください。</p><p></p><p><a href="https://iris-abrosaurus-40d.notion.site/Symbol-2a19fdbf052280e4a2a1e3441ccdeee2" target="_blank">Symbolウォレットの作成の仕方</a></p><p><br></p>
-<p></p>
-
-        <div class="important">
-          <h4>💡 重要なポイント</h4>
-          <p>
-            秘密鍵は絶対に他人に見せないでください。この秘密鍵があれば誰でもあなたのウォレットを操作できてしまいます。
-          </p>
-        </div>
-
-        <div class="checklist">
-          <h4>✅ 完了チェック</h4>
+        <li>
+          <strong>新しいWebサービス作成</strong>
           <ul>
-            <li>□ Symbolウォレットをインストールした</li>
-            <li>□ テストネット用ウォレットを作成した</li>
-            <li>□ アドレスと秘密鍵を取得した</li>
-            <li>□ テスト用XYMを受け取った（残高が表示される）</li>
+            <li>ダッシュボードで「New +」→「Web Service」をクリック</li>
+            <li>「Connect a repository」の「Connect account」でGitHubを選択</li>
+            <li>「line-to-symbol」リポジトリを選択</li>
+            <li>「Connect」をクリック</li>
           </ul>
-        </div>
-      </div>
+        </li>
 
-      <div id="step4" class="step">
-        <div class="step-header">
-          <h3>🚀 <span style="color: rgb(255, 255, 255);">ステップ4:&nbsp; &nbsp;Renderでデプロイ</span></h3>
-        </div>
-
-        <div class="goal">
-          <h4>🎯 目標</h4>
-          <p>GitHubのコードをRenderで24時間稼働するWebサービスとして公開します。(無料プランでは15分アクセスが無いとスリープモードになります)</p>
-        </div>
-
-        <h4>📝 手順</h4>
-        <ol>
-          <li>
-            <strong>Renderアカウント作成</strong>
-            <ul>
-              <li><a href="https://render.com/" target="_blank">https://render.com/</a> にアクセス</li>
-              <li>「Get Started」をクリック</li>
-              <li>「Sign up with GitHub」を選択</li>
-              <li>GitHubアカウントでログイン・連携</li>
-            </ul>
-          </li>
-
-          <li>
-            <strong>新しいWebサービス作成</strong>
-            <ul>
-              <li>ダッシュボードで「New +」→「Web Service」をクリック</li>
-              <li>「Connect a repository」の「Connect account」でGitHubを選択</li>
-              <li>「line-to-symbol」リポジトリを選択</li>
-              <li>「Connect」をクリック</li>
-            </ul>
-          </li>
-
-          <li>
-            <strong>サービス設定</strong><ul>
-              <li>「Environment 」で後ほど環境変数を設定</li><li><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/9be449e1-a149-49a1-aaba-2ee7363ae078" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br></li>
-            </ul>
-          </li>
-
-          <li>
-            <strong>デプロイ開始</strong>
-            <ul>
-              <li>「Create Web Service」をクリック</li>
-              <li>デプロイ完了まで数分待機</li>
-              <li>緑色の「✅ Deploy」表示が出ればOK</li><li><p><br></p></li><li><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/30782ae6-163c-4414-bd28-2aa78ecaa176" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><p><br></p><p></p><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/e0759484-ca32-45aa-b1c0-868b7ee4498d" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p>
-<p></p></li><li><p><a href="https://note.com/shuzooooo/n/n6b40c5546cb0" target="_blank">参考資料：【初心者向け】Render.comアカウント作成とWeb Serviceサーバ立ち上げ手順</a></p></li>
-            </ul>
-          </li>
-        </ol>
-
-        <div class="screenshot">
-          <h4>🖼️ 確認すべき箇所</h4>
-          <p>• Renderダッシュボードでサービスが「 ✅&nbsp; Deploy」になっている</p>
-          <p>• サービスURLが表示されている（https://〇〇.onrender.com）</p>
-        </div>
-
-        <div class="important">
-          <h4>💡 重要なポイント</h4>
-          <p>この段階では環境変数を設定していないため、まだ正常動作しません。次のステップで設定します。</p>
-        </div>
-
-        <div class="checklist">
-          <h4>✅ 完了チェック</h4>
+        <li>
+          <strong>サービス設定</strong>
           <ul>
-            <li>□ Renderアカウントが作成できた</li>
-            <li>□ GitHubリポジトリと連携できた</li>
-            <li>□ Webサービスが「Live」状態になった</li>
-            <li>□ サービスURLを確認した</li>
+            <li>「Environment 」で後ほど環境変数を設定</li>
+            <li>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/9be449e1-a149-49a1-aaba-2ee7363ae078"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br>
+            </li>
           </ul>
-        </div>
-      </div>
+        </li>
 
-      <div id="step5" class="step">
-        <div class="step-header">
-          <h3>⚙️ <span style="color: rgb(255, 255, 255);">ステップ5:&nbsp; &nbsp;環境変数設定</span></h3>
-        </div>
-
-        <div class="goal">
-          <h4>🎯 目標</h4>
-          <p>アプリが動作するために必要な設定情報をRenderに登録します。</p>
-        </div>
-
-        <h4>📝 手順</h4>
-        <ol>
-          <li>
-            <strong>Renderの環境変数設定画面へ</strong>
-            <ul>
-              <li>Renderダッシュボードで作成したサービスをクリック</li>
-              <li>左メニューの「Environment」をクリック</li><li><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/7516f7dd-a7c9-4ba0-b8cc-395980f1e820" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br></li>
-            </ul>
-          </li>
-
-          <li>
-            <strong>以下の環境変数を追加</strong>
-            <div class="code-block"><span style="background-color: rgb(255, 255, 255); font-family: &quot;Noto Sans JP&quot;, Arial, sans-serif; font-size: 0px;"><span style="font-weight: bolder; font-family: &quot;Courier New&quot;, monospace; font-size: 18px;">NODE_URL</span><span style="font-family: &quot;Courier New&quot;, monospace; font-size: 18px; background-color: rgb(245, 245, 245);">: https://testnet1.symbol-mikun.net:3001<br><br><span style="font-family: &quot;Noto Sans JP&quot;, Arial, sans-serif;"><span style="font-weight: bolder; font-family: &quot;Courier New&quot;, monospace;">LINE_CHANNEL_SECRET</span><span style="font-family: &quot;Courier New&quot;, monospace;">: （ステップ2で取得したChannel Secret）<br><br></span></span><span style="font-family: &quot;Noto Sans JP&quot;, Arial, sans-serif;"><span style="font-weight: bolder; font-family: &quot;Courier New&quot;, monospace;">LINE_ACCESS_TOKEN</span><span style="font-family: &quot;Courier New&quot;, monospace;">: （ステップ2で取得したChannel Access Token）<br><br></span></span><span style="font-family: &quot;Noto Sans JP&quot;, Arial, sans-serif;"><span style="font-weight: bolder; font-family: &quot;Courier New&quot;, monospace;">SYMBOL_PRIVATE_KEY</span><span style="font-family: &quot;Courier New&quot;, monospace;">: （ステップ3で取得した秘密鍵）<br><span style="font-family: &quot;Noto Sans JP&quot;, Arial, sans-serif;"><span style="font-family: &quot;Courier New&quot;, monospace;"><br><span style="font-weight: bolder;">SYMBOL_TO_ADDRESS</span></span><span style="font-weight: 400; font-family: &quot;Courier New&quot;, monospace;">:&nbsp;<p>TANWG4F32RMJT6UEKA2COQPJERCDLHB34RIGBII</p></span></span></span></span></span></span></div></li><li>
-            <strong>各変数の意味</strong><ul>
-              <li><strong>NODE_URL</strong>:&nbsp; &nbsp;Symbolブロックチェーンに接続するサーバー</li>
-              <li><strong>LINE_CHANNEL_SECRET</strong>:&nbsp; &nbsp;LINE botの認証用</li>
-              <li><strong>LINE_ACCESS_TOKEN</strong>:&nbsp; &nbsp;LINE APIへのアクセス用</li>
-              <li><strong>SYMBOL_PRIVATE_KEY</strong>:&nbsp; トランザクション署名用の秘密鍵</li>
-              <li><strong>SYMBOL_TO_ADDRESS</strong>: メッセージを送信する先のアドレス</li>
-            </ul>
-          </li>
-
-          <li>
-            <strong>設定を保存</strong>
-            <ul>
-              <li>すべての環境変数を入力後、「<strong>Save, Rebuild and Deploy</strong>」ボタンを押して反映させます。</li>
-              <li>自動的にサービスが再起動されます</li>
-            </ul>
-          </li>
-        </ol>
-
-        <div class="important">
-          <h4>💡 重要なポイント</h4>
-          <p>
-            環境変数の入力にスペースや改行が含まれないよう注意してください。コピー&amp;ペーストする際は特に注意が必要です。
-          </p>
-        </div>
-
-        <div class="checklist">
-          <h4>✅ 完了チェック</h4>
+        <li>
+          <strong>デプロイ開始</strong>
           <ul>
-            <li>□ 5つの環境変数をすべて設定した</li>
-            <li>□ 設定を保存した</li>
-            <li>□ サービスが再起動された</li>
-            <li>□ エラーなく「 ✅ Deploy 」状態が維持されている</li>
+            <li>「Create Web Service」をクリック</li>
+            <li>デプロイ完了まで数分待機</li>
+            <li>緑色の「✅ Deploy」表示が出ればOK</li>
+            <li>
+              <p><br></p>
+            </li>
+            <li>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/30782ae6-163c-4414-bd28-2aa78ecaa176"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p>
+              <p><br></p>
+              <p></p>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/e0759484-ca32-45aa-b1c0-868b7ee4498d"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p>
+              <p></p>
+            </li>
+            <li>
+              <p><a href="https://note.com/shuzooooo/n/n6b40c5546cb0" target="_blank">参考資料：【初心者向け】Render.comアカウント作成とWeb
+                  Serviceサーバ立ち上げ手順</a></p>
+            </li>
           </ul>
-        </div>
+        </li>
+      </ol>
+
+      <div class="screenshot">
+        <h4>🖼️ 確認すべき箇所</h4>
+        <p>• Renderダッシュボードでサービスが「 ✅&nbsp; Deploy」になっている</p>
+        <p>• サービスURLが表示されている（https://〇〇.onrender.com）</p>
       </div>
 
-      <div id="step6" class="step">
-        <div class="step-header">
-          <h3>🔗 <span style="color: rgb(255, 255, 255);">ステップ6: Webhook設定</span></h3>
-        </div>
+      <div class="important">
+        <h4>💡 重要なポイント</h4>
+        <p>この段階では環境変数を設定していないため、まだ正常動作しません。次のステップで設定します。</p>
+      </div>
 
-        <div class="goal">
-          <h4>🎯 目標</h4>
-          <p>LINEでメッセージを受信したときに、Renderのアプリに通知されるよう設定します。</p>
-        </div>
+      <div class="checklist">
+        <h4>✅ 完了チェック</h4>
+        <ul>
+          <li>□ Renderアカウントが作成できた</li>
+          <li>□ GitHubリポジトリと連携できた</li>
+          <li>□ Webサービスが「Live」状態になった</li>
+          <li>□ サービスURLを確認した</li>
+        </ul>
+      </div>
+    </div>
 
-        <h4>📝 手順</h4>
-        <ol>
-          <li>
-            <strong>Webhook URLを確認</strong>
-            <ul>
-              <li>RenderのサービスページでURLを確認</li>
-              <li>URL末尾に「/webhook」を追加</li>
-              <li>例：<strong>https://line-to-symbol.onrender.com/webhook</strong></li>
-            </ul>
-          </li>
+    <div id="step5" class="step">
+      <div class="step-header">
+        <h3>⚙️ <span style="color: rgb(255, 255, 255);">ステップ5:&nbsp; &nbsp;環境変数設定</span></h3>
+      </div>
 
-          <li>
-            <strong>LINE DevelopersでWebhook設定</strong>
-            <ul>
-              <li>LINE Developersにアクセス</li>
-              <li>作成したチャネルを選択</li>
-              <li>「Messaging API」タブをクリック</li><li><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/cdc2d5d2-d058-4568-b245-c313d26e6626" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br></li><li><p>「編集」をクリック、URLを入力して、「更新」をクリック</p><p></p><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/acaf2b17-c555-4d9b-a7d0-e8e2b7d73f87" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br><p></p></li><li><p>Webhookの利用をクリックする✅</p></li><li><p></p><p></p><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/bde5c2b4-9a2f-4ec1-84ad-44a74c563011" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br><p></p><p></p></li></ul></li><li><br><ul>
-            </ul>
-          </li>
+      <div class="goal">
+        <h4>🎯 目標</h4>
+        <p>アプリが動作するために必要な設定情報をRenderに登録します。</p>
+      </div>
 
-          <li>
-            <strong>応答メッセージを無効化</strong>
-            <ul>
-              <li>同じページの「&nbsp;<strong>応答メッセージ」</strong>「<strong>あいさつメッセージ」</strong>をを「編集」でオフにして無効にする</li><li><p></p><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/848583bb-b4ab-4f2a-9064-0b6dcee54881" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><p></p>ーーーーーーーーーーーーーーーーーーーーーーーーーー</li><li><p></p><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/db5783f2-4a78-4961-871f-a68e310f2115" alt="Inserted image" style="max-width: 100%; height: 356.9px; width: 491px;" data-height-listener-added="true"></p><br><p></p></li>
-            </ul>
-          </li>
-
-          <li>
-            <strong>Webhook接続テスト</strong>
-            <ul>
-              <li>「Webhook設定」の「検証」ボタンをクリック</li><li><p><img src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/b7f915ee-755b-4cc1-b6de-a13273114ce3" alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br></li>
-              <li>「<strong>成功</strong>」と表示されればOK</li>
-            </ul>
-          </li>
-        </ol>
-
-        <div class="important">
-          <h4>💡 重要なポイント</h4>
-          <p>
-            Webhook
-            URLは必ず「/webhook」で終わる必要があります。また、HTTPSである必要があります（RenderのURLは自動的にHTTPS）。
-          </p>
-        </div>
-
-        <div class="checklist">
-          <h4>✅ 完了チェック</h4>
+      <h4>📝 手順</h4>
+      <ol>
+        <li>
+          <strong>Renderの環境変数設定画面へ</strong>
           <ul>
-            <li>□ RenderサービスのURLを確認した</li>
-            <li>□ Webhook URLを正しく設定した</li>
-            <li>□ Use webhookを有効にした</li>
-            <li>□ 自動応答メッセージを無効にした</li>
-            <li>□ Webhook接続テストが成功した</li>
+            <li>Renderダッシュボードで作成したサービスをクリック</li>
+            <li>左メニューの「Environment」をクリック</li>
+            <li>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/7516f7dd-a7c9-4ba0-b8cc-395980f1e820"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br>
+            </li>
           </ul>
-        </div>
-      </div>
+        </li>
 
-      <div id="step7" class="step">
-        <div class="step-header">
-          <h3>✅ <span style="color: rgb(255, 255, 255);">ステップ7: 動作テスト</span></h3>
-        </div>
-
-        <div class="goal">
-          <h4>🎯 目標</h4>
-          <p>LINE botにメッセージを送信して、正常にブロックチェーンに記録されることを確認します。</p>
-        </div>
-
-        <h4>📝 手順</h4>
-        <ol>
-          <li>
-            <strong>LINE botを友だちに追加&nbsp; &nbsp; </strong><span style="color: rgb(225, 83, 76);">(LINEアカウントで公式アカウントを作った場合は既に友だちになっています)</span><ul>
-              <li>LINE Developersのチャネルページで「Messaging API」タブ</li>
-              <li>「QR code」セクションのQRコードをスマホで読み取り</li>
-              <li>または「Your bot's basic ID」を友だち追加で検索</li>
-              <li>友だち追加を完了</li>
-            </ul>
-          </li>
-
-          <li>
-            <strong>テストメッセージを送信</strong>
-            <ul>
-              <li>LINE botとのトーク画面を開く</li>
-              <li>
-                以下のメッセージを送信：
-                <div class="code-block">📝 初回テストです！</div>
-              </li>
-              <li>botからの返信を待つ（数十秒かかる場合があります）</li>
-            </ul>
-          </li>
-
-          <li>
-            <strong>成功パターンの確認</strong>
-            <ul>
-              <li>
-                正常な場合、以下のような返信が来ます：
-                <div class="code-block">
-                  📝 ブロックチェーンに記録しました<br>
-                  https://testnet.symbol.fyi/transactions/XXXXX...
-                </div>
-              </li>
-              <li>URLをタップして、Symbol Explorerでトランザクションを確認</li>
-            </ul>
-          </li>
-
-          <li>
-            <strong>その他のテスト</strong>
-            <ul>
-              <li>「note: 別のテストメッセージ」でも試してみる</li>
-              <li>「📝」なしのメッセージ（反応しないことを確認）</li>
-              <li>長いメッセージでのテスト</li>
-            </ul>
-          </li>
-        </ol>
-
-        <div class="screenshot">
-          <h4>🖼️ 確認すべき箇所</h4>
-          <p>• botから「ブロックチェーンに記録しました」の返信がある</p>
-          <p>• Symbol Explorerでトランザクション詳細が見える</p>
-        </div>
-
-        <div class="important">
-          <h4>💡 重要なポイント</h4>
-          <p>メッセージは「📝」または「note:」で始める必要があります。これがないメッセージは無視されます。</p>
-        </div>
-
-        <div class="checklist">
-          <h4>✅ 完了チェック</h4>
+        <li>
+          <strong>以下の環境変数を追加</strong>
+          <div class="code-block"><span
+              style="background-color: rgb(255, 255, 255); font-family: &quot;Noto Sans JP&quot;, Arial, sans-serif; font-size: 0px;"><span
+                style="font-weight: bolder; font-family: &quot;Courier New&quot;, monospace; font-size: 18px;">NODE_URL</span><span
+                style="font-family: &quot;Courier New&quot;, monospace; font-size: 18px; background-color: rgb(245, 245, 245);">:
+                https://testnet1.symbol-mikun.net:3001<br><br><span
+                  style="font-family: &quot;Noto Sans JP&quot;, Arial, sans-serif;"><span
+                    style="font-weight: bolder; font-family: &quot;Courier New&quot;, monospace;">LINE_CHANNEL_SECRET</span><span
+                    style="font-family: &quot;Courier New&quot;, monospace;">: （ステップ2で取得したChannel
+                    Secret）<br><br></span></span><span
+                  style="font-family: &quot;Noto Sans JP&quot;, Arial, sans-serif;"><span
+                    style="font-weight: bolder; font-family: &quot;Courier New&quot;, monospace;">LINE_ACCESS_TOKEN</span><span
+                    style="font-family: &quot;Courier New&quot;, monospace;">: （ステップ2で取得したChannel Access
+                    Token）<br><br></span></span><span
+                  style="font-family: &quot;Noto Sans JP&quot;, Arial, sans-serif;"><span
+                    style="font-weight: bolder; font-family: &quot;Courier New&quot;, monospace;">SYMBOL_PRIVATE_KEY</span><span
+                    style="font-family: &quot;Courier New&quot;, monospace;">: （ステップ3で取得した秘密鍵）<br><span
+                      style="font-family: &quot;Noto Sans JP&quot;, Arial, sans-serif;"><span
+                        style="font-family: &quot;Courier New&quot;, monospace;"><br><span
+                          style="font-weight: bolder;">SYMBOL_TO_ADDRESS</span></span><span
+                        style="font-weight: 400; font-family: &quot;Courier New&quot;, monospace;">:&nbsp;<p>
+                          TANWG4F32RMJT6UEKA2COQPJERCDLHB34RIGBII</p></span></span></span></span></span></span></div>
+        </li>
+        <li>
+          <strong>各変数の意味</strong>
           <ul>
-            <li>□ LINE botを友だちに追加できた</li>
-            <li>□ テストメッセージに正常な返信がある</li>
-            <li>□ Symbol Explorerでトランザクションを確認できた</li>
-            <li>□ 複数パターンのテストが成功した</li>
+            <li><strong>NODE_URL</strong>:&nbsp; &nbsp;Symbolブロックチェーンに接続するサーバー</li>
+            <li><strong>LINE_CHANNEL_SECRET</strong>:&nbsp; &nbsp;LINE botの認証用</li>
+            <li><strong>LINE_ACCESS_TOKEN</strong>:&nbsp; &nbsp;LINE APIへのアクセス用</li>
+            <li><strong>SYMBOL_PRIVATE_KEY</strong>:&nbsp; トランザクション署名用の秘密鍵</li>
+            <li><strong>SYMBOL_TO_ADDRESS</strong>: メッセージを送信する先のアドレス</li>
           </ul>
-        </div>
+        </li>
+
+        <li>
+          <strong>設定を保存</strong>
+          <ul>
+            <li>すべての環境変数を入力後、「<strong>Save, Rebuild and Deploy</strong>」ボタンを押して反映させます。</li>
+            <li>自動的にサービスが再起動されます</li>
+          </ul>
+        </li>
+      </ol>
+
+      <div class="important">
+        <h4>💡 重要なポイント</h4>
+        <p>
+          環境変数の入力にスペースや改行が含まれないよう注意してください。コピー&amp;ペーストする際は特に注意が必要です。
+        </p>
       </div>
 
-      <div id="step8" class="step">
-        <div class="step-header">
-          <h3>👀 <span style="color: rgb(255, 255, 255);">ステップ8: ビューワーで確認</span></h3>
-        </div>
+      <div class="checklist">
+        <h4>✅ 完了チェック</h4>
+        <ul>
+          <li>□ 5つの環境変数をすべて設定した</li>
+          <li>□ 設定を保存した</li>
+          <li>□ サービスが再起動された</li>
+          <li>□ エラーなく「 ✅ Deploy 」状態が維持されている</li>
+        </ul>
+      </div>
+    </div>
 
-        <div class="goal">
-          <h4><br></h4>
-          <p>リアルタイムでトランザクションの様子を監視できるビューワーを使ってみます。</p>
-        </div>
-
-        <h4>📝 手順</h4>
-        <ol>
-          <li><ul>
-              <li><p><a href="https://mikunnem.github.io/symbol_viewer/" target="_blank">Symbol Live Tx Viewer</a>&nbsp;をブラウザで開く</p></li>
-              <li>過去のトランザクション一覧が表示される</li>
-            </ul>
-          </li>
-
-          <li>
-            <strong>リアルタイム監視</strong>
-            <ul>
-              <li>ビューワーを開いたまま、LINE botにメッセージ送信</li>
-              <li>新しいトランザクションが上部に表示される</li>
-              <li>最初は「UNCONFIRMED」（未承認）として表示</li>
-              <li>約30秒後に「CONFIRMED」（承認）に変わる</li>
-            </ul>
-          </li>
-        </ol>
-
-        <div class="important">
-          <h4>💡 重要なポイント</h4>
-          <p>
-            ビューワーは指定したアドレス宛のトランザクションのみを表示します。</p>
-        </div>
-
-        <div class="checklist">
-          <h4>✅ 完了チェック</h4><ul>
-            <li>□ 過去のトランザクションが表示される</li>
-            <li>□ リアルタイムで新しいトランザクションが表示される</li>
-          </ul>
-        </div>
+    <div id="step6" class="step">
+      <div class="step-header">
+        <h3>🔗 <span style="color: rgb(255, 255, 255);">ステップ6: Webhook設定</span></h3>
       </div>
 
-      <div id="troubleshoot" class="step">
-        <div class="step-header">
-          <h3>🔧 <span style="color: rgb(255, 255, 255);">トラブルシューティング</span></h3>
-        </div>
+      <div class="goal">
+        <h4>🎯 目標</h4>
+        <p>LINEでメッセージを受信したときに、Renderのアプリに通知されるよう設定します。</p>
+      </div>
 
-        <div class="goal">
-          <h4></h4><meta charset="utf-8">
-<h4 style="
+      <h4>📝 手順</h4>
+      <ol>
+        <li>
+          <strong>Webhook URLを確認</strong>
+          <ul>
+            <li>RenderのサービスページでURLを確認</li>
+            <li>URL末尾に「/webhook」を追加</li>
+            <li>例：<strong>https://line-to-symbol.onrender.com/webhook</strong></li>
+          </ul>
+        </li>
+
+        <li>
+          <strong>LINE DevelopersでWebhook設定</strong>
+          <ul>
+            <li>LINE Developersにアクセス</li>
+            <li>作成したチャネルを選択</li>
+            <li>「Messaging API」タブをクリック</li>
+            <li>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/cdc2d5d2-d058-4568-b245-c313d26e6626"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br>
+            </li>
+            <li>
+              <p>「編集」をクリック、URLを入力して、「更新」をクリック</p>
+              <p></p>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/acaf2b17-c555-4d9b-a7d0-e8e2b7d73f87"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br>
+              <p></p>
+            </li>
+            <li>
+              <p>Webhookの利用をクリックする✅</p>
+            </li>
+            <li>
+              <p></p>
+              <p></p>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/bde5c2b4-9a2f-4ec1-84ad-44a74c563011"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br>
+              <p></p>
+              <p></p>
+            </li>
+          </ul>
+        </li>
+        <li><br>
+          <ul>
+          </ul>
+        </li>
+
+        <li>
+          <strong>応答メッセージを無効化</strong>
+          <ul>
+            <li>同じページの「&nbsp;<strong>応答メッセージ」</strong>「<strong>あいさつメッセージ」</strong>をを「編集」でオフにして無効にする</li>
+            <li>
+              <p></p>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/848583bb-b4ab-4f2a-9064-0b6dcee54881"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p>
+              <p></p>ーーーーーーーーーーーーーーーーーーーーーーーーーー
+            </li>
+            <li>
+              <p></p>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/db5783f2-4a78-4961-871f-a68e310f2115"
+                  alt="Inserted image" style="max-width: 100%; height: 356.9px; width: 491px;"
+                  data-height-listener-added="true"></p><br>
+              <p></p>
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          <strong>Webhook接続テスト</strong>
+          <ul>
+            <li>「Webhook設定」の「検証」ボタンをクリック</li>
+            <li>
+              <p><img
+                  src="https://page.gensparksite.com/get_upload_url/5dd95115d817cbd063f1ede7a3f75f1cd0e55d7f95d52cf766e99f9c16f4b056/default/b7f915ee-755b-4cc1-b6de-a13273114ce3"
+                  alt="Inserted image" style="max-width: 100%; height: auto;" data-height-listener-added="true"></p><br>
+            </li>
+            <li>「<strong>成功</strong>」と表示されればOK</li>
+          </ul>
+        </li>
+      </ol>
+
+      <div class="important">
+        <h4>💡 重要なポイント</h4>
+        <p>
+          Webhook
+          URLは必ず「/webhook」で終わる必要があります。また、HTTPSである必要があります（RenderのURLは自動的にHTTPS）。
+        </p>
+      </div>
+
+      <div class="checklist">
+        <h4>✅ 完了チェック</h4>
+        <ul>
+          <li>□ RenderサービスのURLを確認した</li>
+          <li>□ Webhook URLを正しく設定した</li>
+          <li>□ Use webhookを有効にした</li>
+          <li>□ 自動応答メッセージを無効にした</li>
+          <li>□ Webhook接続テストが成功した</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="step7" class="step">
+      <div class="step-header">
+        <h3>✅ <span style="color: rgb(255, 255, 255);">ステップ7: 動作テスト</span></h3>
+      </div>
+
+      <div class="goal">
+        <h4>🎯 目標</h4>
+        <p>LINE botにメッセージを送信して、正常にブロックチェーンに記録されることを確認します。</p>
+      </div>
+
+      <h4>📝 手順</h4>
+      <ol>
+        <li>
+          <strong>LINE botを友だちに追加&nbsp; &nbsp; </strong><span
+            style="color: rgb(225, 83, 76);">(LINEアカウントで公式アカウントを作った場合は既に友だちになっています)</span>
+          <ul>
+            <li>LINE Developersのチャネルページで「Messaging API」タブ</li>
+            <li>「QR code」セクションのQRコードをスマホで読み取り</li>
+            <li>または「Your bot's basic ID」を友だち追加で検索</li>
+            <li>友だち追加を完了</li>
+          </ul>
+        </li>
+
+        <li>
+          <strong>テストメッセージを送信</strong>
+          <ul>
+            <li>LINE botとのトーク画面を開く</li>
+            <li>
+              以下のメッセージを送信：
+              <div class="code-block">📝 初回テストです！</div>
+            </li>
+            <li>botからの返信を待つ（数十秒かかる場合があります）</li>
+          </ul>
+        </li>
+
+        <li>
+          <strong>成功パターンの確認</strong>
+          <ul>
+            <li>
+              正常な場合、以下のような返信が来ます：
+              <div class="code-block">
+                📝 ブロックチェーンに記録しました<br>
+                https://testnet.symbol.fyi/transactions/XXXXX...
+              </div>
+            </li>
+            <li>URLをタップして、Symbol Explorerでトランザクションを確認</li>
+          </ul>
+        </li>
+
+        <li>
+          <strong>その他のテスト</strong>
+          <ul>
+            <li>「note: 別のテストメッセージ」でも試してみる</li>
+            <li>「📝」なしのメッセージ（反応しないことを確認）</li>
+            <li>長いメッセージでのテスト</li>
+          </ul>
+        </li>
+      </ol>
+
+      <div class="screenshot">
+        <h4>🖼️ 確認すべき箇所</h4>
+        <p>• botから「ブロックチェーンに記録しました」の返信がある</p>
+        <p>• Symbol Explorerでトランザクション詳細が見える</p>
+      </div>
+
+      <div class="important">
+        <h4>💡 重要なポイント</h4>
+        <p>メッセージは「📝」または「note:」で始める必要があります。これがないメッセージは無視されます。</p>
+      </div>
+
+      <div class="checklist">
+        <h4>✅ 完了チェック</h4>
+        <ul>
+          <li>□ LINE botを友だちに追加できた</li>
+          <li>□ テストメッセージに正常な返信がある</li>
+          <li>□ Symbol Explorerでトランザクションを確認できた</li>
+          <li>□ 複数パターンのテストが成功した</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="step8" class="step">
+      <div class="step-header">
+        <h3>👀 <span style="color: rgb(255, 255, 255);">ステップ8: ビューワーで確認</span></h3>
+      </div>
+
+      <div class="goal">
+        <h4><br></h4>
+        <p>リアルタイムでトランザクションの様子を監視できるビューワーを使ってみます。</p>
+      </div>
+
+      <h4>📝 手順</h4>
+      <ol>
+        <li>
+          <ul>
+            <li>
+              <p><a href="https://mikunnem.github.io/symbol_viewer/" target="_blank">Symbol Live Tx
+                  Viewer</a>&nbsp;をブラウザで開く</p>
+            </li>
+            <li>過去のトランザクション一覧が表示される</li>
+          </ul>
+        </li>
+
+        <li>
+          <strong>リアルタイム監視</strong>
+          <ul>
+            <li>ビューワーを開いたまま、LINE botにメッセージ送信</li>
+            <li>新しいトランザクションが上部に表示される</li>
+            <li>最初は「UNCONFIRMED」（未承認）として表示</li>
+            <li>約30秒後に「CONFIRMED」（承認）に変わる</li>
+          </ul>
+        </li>
+      </ol>
+
+      <div class="important">
+        <h4>💡 重要なポイント</h4>
+        <p>
+          ビューワーは指定したアドレス宛のトランザクションのみを表示します。</p>
+      </div>
+
+      <div class="checklist">
+        <h4>✅ 完了チェック</h4>
+        <ul>
+          <li>□ 過去のトランザクションが表示される</li>
+          <li>□ リアルタイムで新しいトランザクションが表示される</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="troubleshoot" class="step">
+      <div class="step-header">
+        <h3>🔧 <span style="color: rgb(255, 255, 255);">トラブルシューティング</span></h3>
+      </div>
+
+      <div class="goal">
+        <h4></h4>
+        <meta charset="utf-8">
+        <h4 style="
     box-sizing: border-box;
     background-repeat: no-repeat;
     --pico-font-weight: 700;
@@ -864,138 +1095,149 @@
     text-decoration-style: initial;
     text-decoration-color: initial;
   ">
-  🚨 よくある問題と解決方法</h4></div>
-
-        <div class="important">
-          <h4>❌ LINE botが反応しない</h4>
-          <p><strong>原因：</strong>Webhook設定の問題</p>
-          <p><strong>解決方法：</strong></p>
-          <ul>
-            <li>LINE DevelopersでWebhook URLが正しく設定されているか確認</li>
-            <li>「webhook」が「有効」になっているか確認</li>
-            <li>Webhook接続テストを実行</li>
-            <li>RenderサービスがLive状態か確認</li>
-          </ul>
-        </div>
-
-        <div class="important">
-          <h4>❌ 「エラー: Announce failed」が返ってくる</h4>
-          <p><strong>原因：</strong>Symbolブロックチェーン関連の設定問題</p>
-          <p><strong>解決方法：</strong></p>
-          <ul>
-            <li>SYMBOL_PRIVATE_KEYが正しく設定されているか確認</li>
-            <li>ウォレットにXYMが残っているか確認（手数料必要）</li>
-            <li>NODE_URLが正しく設定されているか確認</li>
-            <li>テストネット用の秘密鍵を使用しているか確認</li>
-          </ul>
-        </div>
-
-        <div class="important">
-          <h4>❌ Renderサービスがエラーになる</h4>
-          <p><strong>原因：</strong>環境変数の設定問題</p>
-          <p><strong>解決方法：</strong></p>
-          <ul>
-            <li>「Logs」タブでエラーメッセージを確認</li>
-            <li>環境変数に余分な空白や改行がないか確認</li>
-            <li>すべての必須環境変数が設定されているか確認</li>
-            <li>「Manual Deploy」で再デプロイを試行</li>
-          </ul>
-        </div>
-
-        <div class="important">
-          <h4><br></h4><ul>
-          </ul>
-        </div>
-
-        <h4>🔍 デバッグ手順</h4>
-        <ol>
-          <li>
-            <strong>Renderのログを確認</strong>
-            <ul>
-              <li>Renderダッシュボード → サービス → 「Logs」タブ</li>
-              <li>エラーメッセージがないか確認</li>
-            </ul>
-          </li>
-
-          <li>
-            <strong>環境変数を再確認</strong>
-            <ul>
-              <li>「Environment」タブで全項目をチェック</li>
-              <li>値に余分な文字がないか確認</li>
-            </ul>
-          </li>
-
-          <li>
-            <strong>段階的にテスト</strong>
-            <ul>
-              <li>まず簡単なメッセージでテスト</li>
-              <li>Webhook接続テストを実行</li>
-              <li>Symbol Explorerでアドレスを直接確認</li>
-            </ul>
-          </li>
-        </ol>
+          🚨 よくある問題と解決方法</h4>
       </div>
 
-      <div id="customize" class="step">
-        <div class="step-header">
-          <h3>🎨 カスタマイズ方法</h3>
-        </div>
-
-        <div class="goal">
-          <h4><br></h4>
-          <p>基本的なカスタマイズ方法を学び、あなただけのオリジナル機能を追加できるようになります。</p>
-        </div>
-
-        <h4>🛠️ 簡単なカスタマイズ</h4>
-
-        <div class="term">
-          <h4>💬 メッセージのトリガーを変更</h4>
-          <p>「📝」以外の文字でもメッセージを記録できるようにする</p>
-          <div class="code-block">
-            // server.js 151行目付近 const isNote = text.startsWith("📝") || text.startsWith("🎯") || //
-            新しいトリガー追加 text.toLowerCase().startsWith("note:");
-          </div>
-        </div>
-
-        <div class="term">
-          <h4>💰 送信するXYM金額を変更</h4>
-          <p>メッセージと一緒に少額のXYMを送信する</p>
-          <div class="code-block">// server.js 94行目付近 new models.Amount(1000000n) // 1 XYMを送信（元は0n）</div>
-        </div>
-
-        <div class="term">
-          <h4>🎨 返信メッセージをカスタマイズ</h4>
-          <p>成功時の返信メッセージを変更する</p>
-          <div class="code-block">
-            // server.js 168行目付近 await replyLine( replyToken, `🎉 あなたのメッセージを永続保存しました！\n${url}` );</div></div><div class="important">
-        </div>
-
-        <h4>📚 学習リソース</h4>
+      <div class="important">
+        <h4>❌ LINE botが反応しない</h4>
+        <p><strong>原因：</strong>Webhook設定の問題</p>
+        <p><strong>解決方法：</strong></p>
         <ul>
-          <li><a href="https://github.com/mikunNEM/quick_learning_symbol_v3" target="_blank">速習 Symbol&nbsp; SDK&nbsp; v３版</a></li><li><p><a href="https://docs.symbol.dev/ja/" target="_blank"><span style="letter-spacing: 0px; line-height: 1;">https://docs.symbol.dev/ja/</span></a></p>
-</li>
-          <li><a href="https://developers.line.biz/ja/docs/" target="_blank"><span style="letter-spacing: 0px; line-height: 1;">LINE Developers ドキュメント</span></a></li>
-          <li><a href="https://docs.render.com/" target="_blank">Render ドキュメント</a></li>
-          <li><a href="https://nodejs.org/ja/docs/" target="_blank">Node.js ドキュメント</a></li>
+          <li>LINE DevelopersでWebhook URLが正しく設定されているか確認</li>
+          <li>「webhook」が「有効」になっているか確認</li>
+          <li>Webhook接続テストを実行</li>
+          <li>RenderサービスがLive状態か確認</li>
         </ul>
+      </div>
 
-        <div class="checklist">
-          <h4>✅ 次のステップ</h4>
+      <div class="important">
+        <h4>❌ 「エラー: Announce failed」が返ってくる</h4>
+        <p><strong>原因：</strong>Symbolブロックチェーン関連の設定問題</p>
+        <p><strong>解決方法：</strong></p>
+        <ul>
+          <li>SYMBOL_PRIVATE_KEYが正しく設定されているか確認</li>
+          <li>ウォレットにXYMが残っているか確認（手数料必要）</li>
+          <li>NODE_URLが正しく設定されているか確認</li>
+          <li>テストネット用の秘密鍵を使用しているか確認</li>
+        </ul>
+      </div>
+
+      <div class="important">
+        <h4>❌ Renderサービスがエラーになる</h4>
+        <p><strong>原因：</strong>環境変数の設定問題</p>
+        <p><strong>解決方法：</strong></p>
+        <ul>
+          <li>「Logs」タブでエラーメッセージを確認</li>
+          <li>環境変数に余分な空白や改行がないか確認</li>
+          <li>すべての必須環境変数が設定されているか確認</li>
+          <li>「Manual Deploy」で再デプロイを試行</li>
+        </ul>
+      </div>
+
+      <div class="important">
+        <h4><br></h4>
+        <ul>
+        </ul>
+      </div>
+
+      <h4>🔍 デバッグ手順</h4>
+      <ol>
+        <li>
+          <strong>Renderのログを確認</strong>
           <ul>
-            <li>□ 簡単なカスタマイズを1つ試してみる</li>
-            <li>□ GitHubでコードの変更をコミットしてみる</li>
-            <li>□ 友達にLINE botを紹介してみる</li>
+            <li>Renderダッシュボード → サービス → 「Logs」タブ</li>
+            <li>エラーメッセージがないか確認</li>
           </ul>
+        </li>
+
+        <li>
+          <strong>環境変数を再確認</strong>
+          <ul>
+            <li>「Environment」タブで全項目をチェック</li>
+            <li>値に余分な文字がないか確認</li>
+          </ul>
+        </li>
+
+        <li>
+          <strong>段階的にテスト</strong>
+          <ul>
+            <li>まず簡単なメッセージでテスト</li>
+            <li>Webhook接続テストを実行</li>
+            <li>Symbol Explorerでアドレスを直接確認</li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+
+    <div id="customize" class="step">
+      <div class="step-header">
+        <h3>🎨 カスタマイズ方法</h3>
+      </div>
+
+      <div class="goal">
+        <h4><br></h4>
+        <p>基本的なカスタマイズ方法を学び、あなただけのオリジナル機能を追加できるようになります。</p>
+      </div>
+
+      <h4>🛠️ 簡単なカスタマイズ</h4>
+
+      <div class="term">
+        <h4>💬 メッセージのトリガーを変更</h4>
+        <p>「📝」以外の文字でもメッセージを記録できるようにする</p>
+        <div class="code-block">
+          // server.js 151行目付近 const isNote = text.startsWith("📝") || text.startsWith("🎯") || //
+          新しいトリガー追加 text.toLowerCase().startsWith("note:");
         </div>
       </div>
 
-      <div style="text-align: center; margin: 40px 0; padding: 20px; background: #f8f9ff; border-radius: 8px">
-        <h2>🎉 お疲れ様でした！</h2>
-        <p>あなただけのLINE bot + ブロックチェーンアプリが完成しました！</p>
-        <p>メッセージを送るたびに、永続的な記録がブロックチェーンに刻まれます。</p>
-        <p><strong>これであなたも立派なブロックチェーン開発者です！🚀</strong></p>
+      <div class="term">
+        <h4>💰 送信するXYM金額を変更</h4>
+        <p>メッセージと一緒に少額のXYMを送信する</p>
+        <div class="code-block">// server.js 94行目付近 new models.Amount(1000000n) // 1 XYMを送信（元は0n）</div>
+      </div>
+
+      <div class="term">
+        <h4>🎨 返信メッセージをカスタマイズ</h4>
+        <p>成功時の返信メッセージを変更する</p>
+        <div class="code-block">
+          // server.js 168行目付近 await replyLine( replyToken, `🎉 あなたのメッセージを永続保存しました！\n${url}` );</div>
+      </div>
+      <div class="important">
+      </div>
+
+      <h4>📚 学習リソース</h4>
+      <ul>
+        <li><a href="https://github.com/mikunNEM/quick_learning_symbol_v3" target="_blank">速習 Symbol&nbsp; SDK&nbsp;
+            v３版</a></li>
+        <li>
+          <p><a href="https://docs.symbol.dev/ja/" target="_blank"><span
+                style="letter-spacing: 0px; line-height: 1;">https://docs.symbol.dev/ja/</span></a></p>
+        </li>
+        <li><a href="https://developers.line.biz/ja/docs/" target="_blank"><span
+              style="letter-spacing: 0px; line-height: 1;">LINE Developers ドキュメント</span></a></li>
+        <li><a href="https://docs.render.com/" target="_blank">Render ドキュメント</a></li>
+        <li><a href="https://nodejs.org/ja/docs/" target="_blank">Node.js ドキュメント</a></li>
+      </ul>
+
+      <div class="checklist">
+        <h4>✅ 次のステップ</h4>
+        <ul>
+          <li>□ 簡単なカスタマイズを1つ試してみる</li>
+          <li>□ GitHubでコードの変更をコミットしてみる</li>
+          <li>□ 友達にLINE botを紹介してみる</li>
+        </ul>
       </div>
     </div>
-  
 
-</body></html>
+    <div style="text-align: center; margin: 40px 0; padding: 20px; background: #f8f9ff; border-radius: 8px">
+      <h2>🎉 お疲れ様でした！</h2>
+      <p>あなただけのLINE bot + ブロックチェーンアプリが完成しました！</p>
+      <p>メッセージを送るたびに、永続的な記録がブロックチェーンに刻まれます。</p>
+      <p><strong>これであなたも立派なブロックチェーン開発者です！🚀</strong></p>
+    </div>
+  </div>
+
+
+</body>
+
+</html>
